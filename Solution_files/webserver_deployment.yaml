@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: webserver-deploymnt
+  name: webserver-deploymnt
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webserver-deploymnt
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: webserver-deploymnt
+    spec:
+      containers:
+      - image: mustafabacanak/webserver:v1
+        name: webserver
+        ports:
+          - containerPort: 80
+        resources: {}
+        envFrom :
+          - configMapRef:
+              name: serverconfig
+        env : 
+          - name: MYSQL_PASSWORD
+            valueFrom: 
+              secretKeyRef:
+                key: MYSQL_PASSWORD
+                name: mysecret
+        volumeMounts: 
+          - mountPath: "/var/lib/mysql"
+            name: mysql-volume
+            
+      volumes:
+        - name: mysql-volume
+          persistentVolumeClaim:
+            claimName: mypvc
+
+
+status: {}
